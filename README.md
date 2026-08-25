@@ -28,4 +28,4 @@ gripfetch-conformance /path/to/gripfetch-yourplugin
 | `records_provenance` | which registry/mirror served the bytes (0009 §2 rule 7) |
 | `death_is_not_silent` | impossible fetch → error diagnostic or loud stderr exit |
 
-A conformance failure is a bug in the plugin, not an opinion. The full authoring contract lives in the `gripfetch-author` skill (griplint-py repo, `.agents/skills/gripfetch-author/SKILL.md`).
+A conformance failure is a bug in the plugin, not an opinion. The full authoring contract lives in the `gripfetch-author` skill (gripsack repo, `.agents/skills/gripfetch-author/SKILL.md`).
