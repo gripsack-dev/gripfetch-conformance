@@ -1,3 +1,9 @@
+<p>
+  <a href="https://github.com/gripsack-dev/gripfetch-conformance/actions/workflows/ci.yml"><img src="https://github.com/gripsack-dev/gripfetch-conformance/actions/workflows/ci.yml/badge.svg" alt="ci"></a>
+  <a href="https://pypi.org/project/gripfetch-conformance/"><img src="https://img.shields.io/pypi/v/gripfetch-conformance?label=gripfetch-conformance" alt="PyPI"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT"></a>
+</p>
+
 # gripfetch-conformance
 
 The protocol contract for `gripfetch-*` transport plugins, made executable.
