@@ -1,0 +1,25 @@
+name: ci
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Lint (ruff)
+        run: uvx ruff check src tests
+      - name: Test
+        run: uv run pytest -q
+      - name: Packaging gate
+        run: uv build --out-dir dist

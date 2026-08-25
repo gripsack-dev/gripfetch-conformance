@@ -1,0 +1,9 @@
+#!/usr/bin/env python3
+"""A plugin whose payload leaks the environment."""
+import json, os, sys, time
+request = json.loads(sys.stdin.readline())
+dest = request["dest_dir"]
+os.makedirs(dest, exist_ok=True)
+with open(os.path.join(dest, "probe"), "w") as f:
+    f.write(f"staged at {time.time()} on {os.getpid()}\n")
+print(json.dumps({"type": "response", "id": 1, "result": {"provenance": {"registry": "fixture"}}}))

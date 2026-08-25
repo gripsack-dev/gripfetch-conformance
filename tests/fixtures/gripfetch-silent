@@ -1,0 +1,5 @@
+#!/usr/bin/env python3
+"""A plugin that vanishes silently on the impossible."""
+import json, sys
+request = json.loads(sys.stdin.readline())
+sys.exit(0)
