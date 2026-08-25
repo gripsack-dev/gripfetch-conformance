@@ -34,6 +34,28 @@ def responds_to_fetch(exe: str) -> str:
 
 
 @check
+def declares_capabilities(exe: str) -> str:
+    """The `capabilities` op (0002 §throttle): the fetcher answers
+    with its declared rate budgets — or, if it predates the op, fails
+    tolerantly (the core treats that as "no declared budgets")."""
+    with tempfile.TemporaryDirectory() as td:
+        ex = run_exchange(exe, Path(td), op="capabilities")
+    assert not ex.timed_out, "capabilities exchange exceeded the deadline"
+    if not ex.responses:
+        # tolerated: an older plugin may not know the op — but it must
+        # still die noisily (non-zero exit or an error diagnostic)
+        assert ex.status != 0 or any(
+            d.get("severity") == "error" for d in ex.diagnostics
+        ), "unknown op must not look like success"
+        return "pre-capabilities plugin (tolerated)"
+    caps = ex.responses[0].get("result", {}).get("capabilities", {})
+    throttle = caps.get("throttle", {})
+    assert isinstance(throttle, dict), "capabilities.throttle must be a map"
+    for domain, budget in throttle.items():
+        assert "/" in str(budget), f"budget for {domain} must look like N/unit"
+    return f"{len(throttle)} budget(s) declared"
+
+@check
 def stages_bytes_in_dest_dir(exe: str) -> str:
     """The plugin writes its payload under dest_dir."""
     with tempfile.TemporaryDirectory() as td:

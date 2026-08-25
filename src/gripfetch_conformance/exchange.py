@@ -39,6 +39,7 @@ def run_exchange(
     exe: str,
     dest: Path,
     *,
+    op: str = "fetch",
     args: Optional[dict] = None,
     locked: Optional[dict] = None,
     stdin_extra: str = "",
@@ -46,7 +47,7 @@ def run_exchange(
 ) -> Exchange:
     """Spawn the plugin with one request and capture the exchange."""
     request: dict[str, Any] = {
-        "op": "fetch",
+        "op": op,
         "args": args if args is not None else {"package": "conformance-probe", "version": "1.0.0"},
         "dest_dir": str(dest),
     }
