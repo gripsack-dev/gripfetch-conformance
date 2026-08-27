@@ -57,13 +57,19 @@ def declares_capabilities(exe: str) -> str:
 
 @check
 def stages_bytes_in_dest_dir(exe: str) -> str:
-    """The plugin writes its payload under dest_dir."""
+    """The plugin writes its payload under dest_dir. A plugin that
+    cannot resolve the conformance probe answers with an error
+    diagnostic (the honest shape) and MAY stage only a note; a plugin
+    answering success must stage real bytes (gripfetch-apt review)."""
     with tempfile.TemporaryDirectory() as td:
         dest = Path(td)
         ex = run_exchange(exe, dest)
         staged = list(dest.rglob("*"))
     assert ex.responses, "no response"
-    assert staged, "dest_dir is empty after a successful response"
+    errored = any(d.get("severity") == "error" for d in ex.diagnostics)
+    if errored:
+        return "unresolvable probe answered with an error diagnostic (honest)"
+    assert staged, "success with an empty dest_dir is a fabricated payload"
     return f"staged {len(staged)} entries"
 
 
@@ -140,10 +146,12 @@ def death_is_not_silent(exe: str) -> str:
         ex = run_exchange(exe, Path(td), args={"package": "does-not-exist-404", "version": "0.0.0"})
     errors = [d for d in ex.diagnostics if d.get("severity") == "error"]
     died_loudly = ex.status not in (0, None) and ex.stderr_tail.strip()
-    assert errors or died_loudly or ex.responses, (
-        "impossible fetch vanished silently — no error diagnostic, no stderr, no response"
+    assert errors or died_loudly, (
+        "impossible fetch answered success — fabricating a payload for "
+        "does-not-exist-404 is a lie, not a result (error diagnostic or "
+        "nonzero exit, always)"
     )
-    return "failure is loud"
+    return "failure is loud, success is never fabricated"
 
 
 def main() -> None:
